@@ -1,16 +1,16 @@
 <?php
 session_start();
 include "db.php";
+include 'header.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $username = trim($_POST['username']);
+    $username = $_POST['username'];
     $password = $_POST['password'];
 
-    $sql = "SELECT * FROM users WHERE username = ?";
-    $stmt = mysqli_prepare($conn, $sql);
-    mysqli_stmt_bind_param($stmt, "s", $username);
-    mysqli_stmt_execute($stmt);
-    $result = mysqli_stmt_get_result($stmt);
+    // Directly using variables in query (not secure but simpler)
+    $sql = "SELECT * FROM users WHERE username = '$username'";
+    // $result = mysqli_query($conn, $sql);
+    $result = $conn->query($sql);
 
     if ($row = mysqli_fetch_assoc($result)) {
         if (password_verify($password, $row['password'])) {
@@ -18,10 +18,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             header("Location: welcome.php");
             exit();
         } else {
-            echo "Incorrect password.";
+            echo "<div class='alert alert-danger fw-bold'>Incorrect Password.</div>";
         }
     } else {
-        echo "User not found.";
+        echo "<div class='alert alert-warning fw-bold text-dark'>User not found.</div>";
     }
 }
+
+include 'footer.php';
 ?>

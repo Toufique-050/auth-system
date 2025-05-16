@@ -1,22 +1,20 @@
 <?php
 include "db.php";
 
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $username = trim($_POST['username']);
-    $password = password_hash($_POST['password'], PASSWORD_DEFAULT); // Hash password
+    $username = $_POST['username'];
+    $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
 
-    $sql = "INSERT INTO users (username, password) VALUES (?, ?)";
-    $stmt = mysqli_prepare($conn, $sql);
+    $sql = "INSERT INTO users (username, password) VALUES ('$username', '$password')";
+    // $result = mysqli_query($conn, $sql);
+    $result = $conn->query($sql);
 
-    if ($stmt) {
-        mysqli_stmt_bind_param($stmt, "ss", $username, $password);
-        if (mysqli_stmt_execute($stmt)) {
-            header("Location: index.php?register=success");
-        } else {
-            echo "Error: Username may already exist.";
-        }
+    if ($result) {
+        header("Location: index.php?register=success");
     } else {
-        echo "Database error.";
+        echo "Error: Registration failed.";
     }
 }
+
 ?>
